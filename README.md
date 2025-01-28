@@ -28,3 +28,9 @@
 - Make constructor
 - 404 page created
 - Created Edit and delete methods
+
+## Entity Class 
+
+- Learn Mutations
+- Learn Accessors
+- Learn Vitual Functions

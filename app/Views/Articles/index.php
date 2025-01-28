@@ -11,11 +11,11 @@
     <?php foreach ($articles as $article) : ?>
         <article>
             <h3>
-                <a href="<?= site_url( 'article/' . $article['id'] ) ?>">
-                    <?= esc( $article['title'] ) ?>
+                <a href="<?= site_url( 'article/' . $article->id ) ?>">
+                    <?= esc( $article->title ) ?>
                 </a>
             </h3>
-            <p><?= esc( $article['description'] ) ?></p>
+            <p><?= esc( $article->description ) ?></p>
         </article>
     <?php endforeach; ?>
 

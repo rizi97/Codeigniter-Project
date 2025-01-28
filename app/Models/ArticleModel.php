@@ -10,6 +10,8 @@ class ArticleModel extends Model
 
     protected $allowedFields = ['title', 'description'];
 
+    protected $returnType = 'App\Entities\ArticleEntity';
+
     protected $validationRules = [
         'title'         => 'required|max_length[30]',
         'description'   => 'required'

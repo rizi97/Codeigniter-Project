@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use App\Models\ArticleModel;
+use App\Entities\ArticleEntity;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Articles extends BaseController {
 
     private ArticleModel $model;
+    private ArticleEntity $entity;
 
     public function __construct() {
         $this->model = new ArticleModel;
+        $this->entity = new ArticleEntity;
     }
 
 
@@ -35,15 +38,20 @@ class Articles extends BaseController {
 
 
     public function add() {
-        return view('Articles/add');
+        
+        return view('Articles/add', [
+            'article'   => $this->entity
+        ]);
     }
 
 
     public function create() {
-
-        $id = $this->model->insert( $this->request->getPost() );
         
-        if( $id === false ) {
+        $article = $this->entity->fill( $this->request->getPost() );
+
+        $id = $this->model->insert( $article );
+        
+        if( $id === false  ) {
             return redirect()->back()
                             ->with('errors', $this->model->errors() )
                             ->withInput();
@@ -66,16 +74,24 @@ class Articles extends BaseController {
 
     public function update( $id ) {
 
-        $updated_id = $this->model->update( $id, $this->request->getPost() );
+        $article = $this->getArticleOr404($id);
 
-        if( $updated_id === false ) {
+        $article->fill( $this->request->getPost() );
+
+
+        if( ! $article->hasChanged() ) {
             return redirect()->back()
-                            ->with('errors', $this->model->errors() )
-                            ->withInput();
+                            ->with('message', 'Nothing to update. Because values are same.' );
         }
 
-        return redirect()->to('articles/edit/'. $id )
+        if( $this->model->save( $article ) ) {
+            return redirect()->to('articles/edit/'. $id )
                             ->with('message', 'Article updated.');
+        }
+        
+        return redirect()->back()
+                        ->with('errors', $this->model->errors() )
+                        ->withInput();
     }
 
 
@@ -97,6 +113,7 @@ class Articles extends BaseController {
 
 
     private function getArticleOr404( $id ) {
+        
         $article = $this->model->find($id);
 
         if( $article === null ) {

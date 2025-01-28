@@ -16,3 +16,8 @@
 - Learn Migration
 - Learn Models
 - Database Connection and retrieving data using model
+
+## Form Validations
+
+- Learn sessions and flash display messages
+- Learn model validations

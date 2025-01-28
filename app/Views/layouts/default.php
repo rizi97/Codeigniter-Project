@@ -14,6 +14,8 @@
 
     <?php endif; ?>
 
+    <?= $this->include('inc/navigation') ?>
+
     <?= $this->renderSection('content') ?>
 
 </body>

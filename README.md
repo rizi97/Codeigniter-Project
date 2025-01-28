@@ -21,3 +21,10 @@
 
 - Learn sessions and flash display messages
 - Learn model validations
+- Learn escaping function
+
+## Refine Code & Complete CRUD
+
+- Make constructor
+- 404 page created
+- Created Edit and delete methods

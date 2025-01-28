@@ -3,14 +3,20 @@
 namespace App\Controllers;
 
 use App\Models\ArticleModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Articles extends BaseController {
 
+    private ArticleModel $model;
+
+    public function __construct() {
+        $this->model = new ArticleModel;
+    }
+
+
     public function index() : string {
 
-        $articleModel = new ArticleModel();
-
-        $data = $articleModel->findAll();
+        $data = $this->model->findAll();
 
         return view('Articles/index', [
             'articles' => $data
@@ -19,9 +25,8 @@ class Articles extends BaseController {
 
 
     public function show( $id ) {
-        $articleModel = new ArticleModel();
-
-        $data = $articleModel->find($id);
+        
+        $data = $this->getArticleOr404($id);
 
         return view('Articles/single', [
             'article'   => $data
@@ -36,13 +41,11 @@ class Articles extends BaseController {
 
     public function create() {
 
-        $articleModel = new ArticleModel();
-
-        $id = $articleModel->insert( $this->request->getPost() );
+        $id = $this->model->insert( $this->request->getPost() );
         
         if( $id === false ) {
             return redirect()->back()
-                            ->with('errors', $articleModel->errors() )
+                            ->with('errors', $this->model->errors() )
                             ->withInput();
         }
 
@@ -50,4 +53,56 @@ class Articles extends BaseController {
                             ->with('message', 'Article added.');
     }
 
+
+    public function edit( $id ) {
+        
+        $article = $this->getArticleOr404($id);
+
+        return view('Articles/edit', [
+            'article' => $article
+        ]);
+    }
+
+
+    public function update( $id ) {
+
+        $updated_id = $this->model->update( $id, $this->request->getPost() );
+
+        if( $updated_id === false ) {
+            return redirect()->back()
+                            ->with('errors', $this->model->errors() )
+                            ->withInput();
+        }
+
+        return redirect()->to('articles/edit/'. $id )
+                            ->with('message', 'Article updated.');
+    }
+
+
+    public function delete( $id ) {
+
+        $article = $this->getArticleOr404($id);
+
+        if( $this->request->is('post') ) {
+            $this->model->delete( $id );
+
+            return redirect()->to('articles' )
+                            ->with('message', 'Article Deleted.');
+        }   
+
+        return view('Articles/delete', [
+            'article'    => $article
+        ]);
+    }
+
+
+    private function getArticleOr404( $id ) {
+        $article = $this->model->find($id);
+
+        if( $article === null ) {
+            throw new PageNotFoundException('Article '. $id .' no found.');
+        }
+
+        return $article;
+    }
 }
